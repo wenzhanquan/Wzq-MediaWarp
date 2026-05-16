@@ -2,6 +2,8 @@ version: 2
 
 project_name: MediaWarp
 
+includes:
+  - ./  # 只包含根目录的配置
 git:
   ignore_tags:
     - pre-release
