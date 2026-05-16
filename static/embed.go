@@ -4,5 +4,5 @@ import (
 	"embed"
 )
 
-//go:embed embyExternalUrl/embyWebAddExternalUrl/embyLaunchPotplayer.js
+//go:embed embed.go
 var EmbeddedStaticAssets embed.FS
