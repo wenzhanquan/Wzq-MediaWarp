@@ -17,9 +17,6 @@ permissions:
   packages: write
   actions: write
 
-# 全局强制所有JavaScript Actions使用Node.js 24（双重保险）
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   release:
