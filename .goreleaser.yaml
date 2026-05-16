@@ -2,8 +2,6 @@ version: 2
 
 project_name: MediaWarp
 
-# 1. 删除了错误的 includes: - ./ 
-
 git:
   ignore_tags:
     - pre-release
@@ -15,9 +13,6 @@ release:
   name_template: "{{ .Tag }}"
   extra_files:
     - glob: ./LICENSE
-    # 注意：如果你的代码库中没有 config/config.yaml.example 这个文件，请务必删掉下面这两行，否则必然打包失败！
-    - glob: ./config/config.yaml.example
-      name_template: config.yaml
 
 before:
   hooks:
@@ -48,7 +43,6 @@ builds:
       - -X github.com/wenzhanquan/Wzq-MediaWarp/internal/config.commitHash={{ .FullCommit }}
       - -X github.com/wenzhanquan/Wzq-MediaWarp/internal/config.buildDate={{ .Date }}
 
-# 2. 将 dockers_v2 修改为了 dockers (v2 强制要求)
 dockers:
   # AMD64 镜像
   - image_templates:
@@ -85,19 +79,16 @@ docker_manifests:
       - "wenzhanquan/mediawarp:{{ .Version }}-amd64"
       - "wenzhanquan/mediawarp:{{ .Version }}-arm64"
       - "wenzhanquan/mediawarp:{{ .Version }}-armv7"
+
 archives:
-  # 3. 将 formats: [tar.gz] 修正为 format: tar.gz
   - format: tar.gz
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{- .Os }}_{{ .Arch }}{{- if .Arm}}v{{ .Arm }}{{- end}}"
     format_overrides:
       - goos: windows
-        format: zip  # 将 formats: [zip] 修正为 format: zip
+        format: zip
     files:
       - src: LICENSE
       - src: README.md
-      # 注意：如果找不到这个文件，打包同样会崩溃，没有的话请删掉下面两行
-      - src: config/config.yaml.example
-        dst: config.yaml.example
 
 changelog:
   sort: asc
