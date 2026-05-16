@@ -22,33 +22,35 @@ jobs:
     env:
       IS_RELEASE: ${{ startsWith(github.ref, 'refs/tags/') }}
       PRE_RELEASE_TAG: pre-release
+      # 全局强制所有JavaScript Actions使用Node.js 24（双重保险）
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5  # 从v4升级到v5（支持Node.js 24）
         with:
           submodules: true
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6  # 从v5升级到v6（支持Node.js 24）
         with:
-          go-version-file: "go.mod" # 使用 go.mod 文件中的 golang 版本
+          go-version-file: "go.mod" # 保持使用go.mod文件中的golang版本
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4  # 从v3升级到v4（支持Node.js 24）
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4  # 从v3升级到v4（支持Node.js 24）
 
       - name: Login to DockerHub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4  # 从v3升级到v4（支持Node.js 24）
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run GoReleaser (tag release)
         if: ${{ env.IS_RELEASE == 'true' }}
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v6  # v6已原生支持Node.js 24
         with:
           distribution: goreleaser
           version: "~> v2"
@@ -58,7 +60,7 @@ jobs:
 
       - name: Run GoReleaser (pre-release for branch push)
         if: ${{ env.IS_RELEASE != 'true' }}
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v6  # v6已原生支持Node.js 24
         with:
           distribution: goreleaser
           version: "~> v2"
@@ -71,11 +73,9 @@ jobs:
         id: prerelease_meta
         run: |
           test -f dist/metadata.json
-
           version="$(jq -r '.version' dist/metadata.json)"
           commit="$(jq -r '.commit' dist/metadata.json)"
           date="$(jq -r '.date' dist/metadata.json)"
-
           if [ -z "$version" ] || [ "$version" = "null" ]; then
             echo "dist/metadata.json missing .version" >&2
             exit 1
@@ -88,25 +88,20 @@ jobs:
             echo "dist/metadata.json missing .date" >&2
             exit 1
           fi
-
           short_commit="${commit::7}"
-
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "commit=$commit" >> $GITHUB_OUTPUT
           echo "short_commit=$short_commit" >> $GITHUB_OUTPUT
           echo "date=$date" >> $GITHUB_OUTPUT
-
       - name: Push Docker images from GoReleaser artifacts
         if: ${{ env.IS_RELEASE != 'true' }}
         run: |
           test -f dist/artifacts.json
-
           mapfile -t image_refs < <(jq -r '.[] | select(.type=="Docker Image") | .name' dist/artifacts.json)
           if [ "${#image_refs[@]}" -eq 0 ]; then
             echo "No Docker images found in dist/artifacts.json" >&2
             exit 1
           fi
-
           for ref in "${image_refs[@]}"; do
             docker image inspect "$ref" >/dev/null 2>&1 || {
               echo "Local docker image not found: $ref" >&2
@@ -114,18 +109,15 @@ jobs:
             }
             docker push "$ref"
           done
-
           docker buildx imagetools create \
             -t "akimio/mediawarp:${{ steps.prerelease_meta.outputs.version }}" \
             "${image_refs[@]}"
-
           docker buildx imagetools create \
             -t "akimio/mediawarp:prerelease-latest" \
             "${image_refs[@]}"
-
       - name: Cleanup existing pre-releases
         if: ${{ env.IS_RELEASE != 'true' }}
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8  # 从v7升级到v8（支持Node.js 24）
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -136,14 +128,11 @@ jobs:
               repo,
               per_page: 100,
             });
-
             const prereleases = releases.filter((r) => r.prerelease);
             core.info(`Found ${prereleases.length} existing prerelease(s)`);
-
             for (const rel of prereleases) {
               core.info(`Deleting prerelease id=${rel.id} tag=${rel.tag_name}`);
               await github.rest.repos.deleteRelease({ owner, repo, release_id: rel.id });
-
               try {
                 await github.rest.git.deleteRef({ owner, repo, ref: `tags/${rel.tag_name}` });
                 core.info(`Deleted tag refs/tags/${rel.tag_name}`);
@@ -152,10 +141,9 @@ jobs:
                 core.info(`Tag refs/tags/${rel.tag_name} already absent`);
               }
             }
-
       - name: Create GitHub pre-release and upload artifacts
         if: ${{ env.IS_RELEASE != 'true' }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2  # v2.0.9+已原生支持Node.js 24
         with:
           tag_name: ${{ env.PRE_RELEASE_TAG }}
           target_commitish: ${{ steps.prerelease_meta.outputs.commit }}
