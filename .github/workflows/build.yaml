@@ -27,7 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: true  # 只拉取直接子模块
+          submodules: true
           fetch-depth: 0
 
       - name: Set up Go
@@ -112,10 +112,10 @@ jobs:
             docker push "$ref"
           done
           docker buildx imagetools create \
-            -t "wenzhanquan/mediawarp:${{ steps.prerelease_meta.outputs.version }}" \
+            -t "wenzhanquan1/mediawarp:${{ steps.prerelease_meta.outputs.version }}" \
             "${image_refs[@]}"
           docker buildx imagetools create \
-            -t "wenzhanquan/mediawarp:prerelease-latest" \
+            -t "wenzhanquan1/mediawarp:prerelease-latest" \
             "${image_refs[@]}"
 
       - name: Cleanup existing pre-releases
