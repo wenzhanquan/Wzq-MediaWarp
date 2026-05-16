@@ -112,10 +112,10 @@ jobs:
             docker push "$ref"
           done
           docker buildx imagetools create \
-            -t "wenzhanquan1/mediawarp:${{ steps.prerelease_meta.outputs.version }}" \
+            -t "wenzhanquan/mediawarp:${{ steps.prerelease_meta.outputs.version }}" \
             "${image_refs[@]}"
           docker buildx imagetools create \
-            -t "wenzhanquan1/mediawarp:prerelease-latest" \
+            -t "wenzhanquan/mediawarp:prerelease-latest" \
             "${image_refs[@]}"
 
       - name: Cleanup existing pre-releases
