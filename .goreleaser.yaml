@@ -50,35 +50,41 @@ builds:
 
 # 2. 将 dockers_v2 修改为了 dockers (v2 强制要求)
 dockers:
-  - dockerfile: docker/Dockerfile
-    build_args:
-      APP_VERSION: "{{ .Version }}"
-      COMMIT_HASH: "{{ .FullCommit }}"
-      BUILD_DATE: "{{ .Date }}"
-    extra_files:
-      - go.mod
-      - go.sum
-      - main.go
-      - constants
-      - internal
-      - static
-      - utils
-    images:
-      - wenzhanquan/mediawarp
-    tags:
-      - "{{ .Version }}"
-      - "{{ if not .IsSnapshot }}latest{{ end }}"
-    labels:
-      org.opencontainers.image.created: "{{ .Date }}"
-      org.opencontainers.image.title: "{{ .ProjectName }}"
-      org.opencontainers.image.revision: "{{ .FullCommit }}"
-      org.opencontainers.image.version: "{{ .Version }}"
-    platforms:
-      - linux/amd64
-      - linux/arm64
-      - linux/arm/v7
-      - linux/riscv64
+  # AMD64 镜像
+  - image_templates:
+      - "wenzhanquan/mediawarp:{{ .Version }}-amd64"
+    dockerfile: docker/Dockerfile.goreleaser
+    goos: linux
+    goarch: amd64
 
+  # ARM64 镜像
+  - image_templates:
+      - "wenzhanquan/mediawarp:{{ .Version }}-arm64"
+    dockerfile: docker/Dockerfile.goreleaser
+    goos: linux
+    goarch: arm64
+
+  # ARMv7 镜像
+  - image_templates:
+      - "wenzhanquan/mediawarp:{{ .Version }}-armv7"
+    dockerfile: docker/Dockerfile.goreleaser
+    goos: linux
+    goarch: arm
+    goarm: 7
+
+docker_manifests:
+  # 正式发布时，自动将上面三个架构的镜像合并为一个带版本号的 Tag
+  - name_template: "wenzhanquan/mediawarp:{{ .Version }}"
+    image_templates:
+      - "wenzhanquan/mediawarp:{{ .Version }}-amd64"
+      - "wenzhanquan/mediawarp:{{ .Version }}-arm64"
+      - "wenzhanquan/mediawarp:{{ .Version }}-armv7"
+  # 正式发布时，自动合并为 latest
+  - name_template: "wenzhanquan/mediawarp:latest"
+    image_templates:
+      - "wenzhanquan/mediawarp:{{ .Version }}-amd64"
+      - "wenzhanquan/mediawarp:{{ .Version }}-arm64"
+      - "wenzhanquan/mediawarp:{{ .Version }}-armv7"
 archives:
   # 3. 将 formats: [tar.gz] 修正为 format: tar.gz
   - format: tar.gz
