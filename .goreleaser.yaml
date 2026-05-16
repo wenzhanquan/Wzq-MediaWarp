@@ -46,21 +46,21 @@ builds:
 dockers:
   # AMD64 镜像
   - image_templates:
-      - "wenzhanquan/mediawarp:{{ .Version }}-amd64"
+      - "wenzhanquan1/mediawarp:{{ .Version }}-amd64"
     dockerfile: docker/Dockerfile.goreleaser
     goos: linux
     goarch: amd64
 
   # ARM64 镜像
   - image_templates:
-      - "wenzhanquan/mediawarp:{{ .Version }}-arm64"
+      - "wenzhanquan1/mediawarp:{{ .Version }}-arm64"
     dockerfile: docker/Dockerfile.goreleaser
     goos: linux
     goarch: arm64
 
   # ARMv7 镜像
   - image_templates:
-      - "wenzhanquan/mediawarp:{{ .Version }}-armv7"
+      - "wenzhanquan1/mediawarp:{{ .Version }}-armv7"
     dockerfile: docker/Dockerfile.goreleaser
     goos: linux
     goarch: arm
@@ -68,17 +68,17 @@ dockers:
 
 docker_manifests:
   # 正式发布时，自动将上面三个架构的镜像合并为一个带版本号的 Tag
-  - name_template: "wenzhanquan/mediawarp:{{ .Version }}"
+  - name_template: "wenzhanquan1/mediawarp:{{ .Version }}"
     image_templates:
-      - "wenzhanquan/mediawarp:{{ .Version }}-amd64"
-      - "wenzhanquan/mediawarp:{{ .Version }}-arm64"
-      - "wenzhanquan/mediawarp:{{ .Version }}-armv7"
+      - "wenzhanquan1/mediawarp:{{ .Version }}-amd64"
+      - "wenzhanquan1/mediawarp:{{ .Version }}-arm64"
+      - "wenzhanquan1/mediawarp:{{ .Version }}-armv7"
   # 正式发布时，自动合并为 latest
-  - name_template: "wenzhanquan/mediawarp:latest"
+  - name_template: "wenzhanquan1/mediawarp:latest"
     image_templates:
-      - "wenzhanquan/mediawarp:{{ .Version }}-amd64"
-      - "wenzhanquan/mediawarp:{{ .Version }}-arm64"
-      - "wenzhanquan/mediawarp:{{ .Version }}-armv7"
+      - "wenzhanquan1/mediawarp:{{ .Version }}-amd64"
+      - "wenzhanquan1/mediawarp:{{ .Version }}-arm64"
+      - "wenzhanquan1/mediawarp:{{ .Version }}-armv7"
 
 archives:
   - format: tar.gz
