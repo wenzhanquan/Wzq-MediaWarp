@@ -67,13 +67,13 @@ dockers:
     goarm: 7
 
 docker_manifests:
-  # 正式发布时，自动将上面三个架构的镜像合并为一个带版本号的 Tag
+  # 正式发布（打Git Tag）时，自动将上面三个架构的镜像合并为一个带版本号的真正的多架构 Tag
   - name_template: "wenzhanquan/mediawarp:{{ .Version }}"
     image_templates:
       - "wenzhanquan/mediawarp:{{ .Version }}-amd64"
       - "wenzhanquan/mediawarp:{{ .Version }}-arm64"
       - "wenzhanquan/mediawarp:{{ .Version }}-armv7"
-  # 正式发布时，自动合并为 latest
+  # 正式发布时，自动合并为真正的多架构 latest
   - name_template: "wenzhanquan/mediawarp:latest"
     image_templates:
       - "wenzhanquan/mediawarp:{{ .Version }}-amd64"
