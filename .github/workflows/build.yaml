@@ -17,7 +17,7 @@ permissions:
   packages: write
   actions: write
 
-# 全局强制所有JavaScript Actions使用Node.js 24
+# 全局强制所有JavaScript Actions使用Node.js 24（双重保险）
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -31,7 +31,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5.0.0
         with:
-          submodules: true  # 正确写法：只拉取直接子模块，不拉取子模块的子模块
+          submodules: true  # 正确写法：只拉取直接子模块，不拉取子模块的子模块（避免dd-danmaku错误）
           fetch-depth: 0
 
       - name: Set up Go
