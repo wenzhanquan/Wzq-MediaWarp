@@ -31,12 +31,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5.0.0
         with:
-          submodules: true
-          recursive: false  # 关键修复：不递归拉取子模块，避免读取子模块的goreleaser配置
+          submodules: true  # 正确写法：只拉取直接子模块，不拉取子模块的子模块
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v6.0.0
+        uses: actions/setup-go@v7.0.0  # 升级到v7，原生支持Node.js 24
         with:
           go-version-file: "go.mod"
 
@@ -56,7 +55,7 @@ jobs:
 
       - name: Run GoReleaser (tag release)
         if: ${{ env.IS_RELEASE == 'true' }}
-        uses: goreleaser/goreleaser-action@v7.0.0  # 升级到v7，原生支持Node.js 24
+        uses: goreleaser/goreleaser-action@v7.0.0
         with:
           distribution: goreleaser
           version: "~> v2"
@@ -66,7 +65,7 @@ jobs:
 
       - name: Run GoReleaser (pre-release for branch push)
         if: ${{ env.IS_RELEASE != 'true' }}
-        uses: goreleaser/goreleaser-action@v7.0.0  # 升级到v7
+        uses: goreleaser/goreleaser-action@v7.0.0
         with:
           distribution: goreleaser
           version: "~> v2"
