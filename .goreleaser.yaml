@@ -23,7 +23,7 @@ before:
 builds:
   - skip: false
     env:
-      - GOPROXY=https://goproxy.io,direct
+      - GOPROXY=https://goproxy.io,direct  # 这个配置是正确的，无需修改
       - CGO_ENABLED=0
     goos:
       - linux
@@ -60,7 +60,7 @@ dockers_v2:
       - static
       - utils
     images:
-      - akimio/mediawarp
+      - wenzhanquan/mediawarp  # 已修改：从akimio改为你的用户名wenzhanquan
     tags:
       - "{{ .Version }}"
       - "{{ if not .IsSnapshot }}latest{{ end }}"
