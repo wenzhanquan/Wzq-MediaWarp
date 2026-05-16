@@ -27,40 +27,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: true  # 只拉取直接子模块
           fetch-depth: 0
-
-      # ----------------------------------------------------
-      # 新增核心步骤：编译前端弹幕插件，生成供 Go 嵌入的 ede.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build frontend submodules
-        run: |
-          # 1. 编译 dd-danmaku
-          echo "Building dd-danmaku..."
-          cd static/dd-danmaku
-          # 如果文件不存在则触发编译
-          if [ ! -f "ede.js" ]; then
-            npm install --no-fund --no-audit
-            npm run build
-            # 兼容常见的前端打包输出目录
-            if [ -f "dist/ede.js" ]; then cp dist/ede.js ./ede.js; fi
-          fi
-          cd ../..
-
-          # 2. 编译 jellyfin-danmaku
-          echo "Building jellyfin-danmaku..."
-          cd static/jellyfin-danmaku
-          if [ ! -f "ede.js" ]; then
-            npm install --no-fund --no-audit
-            npm run build
-            if [ -f "dist/ede.js" ]; then cp dist/ede.js ./ede.js; fi
-          fi
-          cd ../..
-      # ----------------------------------------------------
 
       - name: Set up Go
         uses: actions/setup-go@v5
