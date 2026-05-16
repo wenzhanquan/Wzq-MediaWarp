@@ -1,24 +1,7 @@
-FROM golang:1.24 AS builder
-
-ARG APP_VERSION=dev
-ARG COMMIT_HASH=unknown
-ARG BUILD_DATE=unknown
-
-ENV GO111MODULE=on \
-    GOTOOLCHAIN=auto
-
-WORKDIR /builder
-COPY . .
-RUN go mod download && \
-    go build -ldflags " \
-    -s -w \
-    -X github.com/wenzhanquan/Wzq-MediaWarp/internal/config.appVersion=${APP_VERSION} \
-    -X github.com/wenzhanquan/Wzq-MediaWarp/internal/config.commitHash=${COMMIT_HASH} \
-    -X github.com/wenzhanquan/Wzq-MediaWarp/internal/config.buildDate=${BUILD_DATE}" \
-    -o MediaWarp
-
 FROM alpine:latest
-COPY --from=builder /builder/MediaWarp /MediaWarp
+
+# GoReleaser 会自动将编译好的二进制文件放在根目录，直接拷贝即可
+COPY MediaWarp /MediaWarp
 
 RUN chmod +x /MediaWarp
 
