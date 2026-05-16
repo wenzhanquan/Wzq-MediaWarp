@@ -111,6 +111,8 @@ jobs:
             }
             docker push "$ref"
           done
+          
+          # ✨ 已经彻底修复这里：全部统一修正为主号 wenzhanquan，不再保留副号后缀 1
           docker buildx imagetools create \
             -t "wenzhanquan/mediawarp:${{ steps.prerelease_meta.outputs.version }}" \
             "${image_refs[@]}"
