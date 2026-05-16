@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-# GoReleaser 会自动将编译好的二进制文件放在根目录，直接拷贝即可
+# 直接拷贝 GoReleaser 在各架构上下文根目录下准备好的二进制文件
 COPY MediaWarp /MediaWarp
 
 RUN chmod +x /MediaWarp
