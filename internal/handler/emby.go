@@ -50,7 +50,7 @@ func NewEmbyServerHandler(addr string, apiKey string) (*EmbyHandler, error) {
 	handler.proxy = httputil.NewSingleHostReverseProxy(target)
 
 	{ // 初始化路由规则
-		github.com/wenzhanquan/Wzq-MediaWarp = []RegexpRouteRule{
+		handler.routerRules = []RegexpRouteRule{
 			{
 				Regexp:  constants.EmbyRegexp.Router.VideosHandler,
 				Handler: handler.VideosHandler,
@@ -77,7 +77,7 @@ func NewEmbyServerHandler(addr string, apiKey string) (*EmbyHandler, error) {
 
 		if config.Web.Enable {
 			if config.Web.Index || config.Web.Head != "" || config.Web.ExternalPlayerUrl || config.Web.VideoTogether {
-				github.com/wenzhanquan/Wzq-MediaWarp = append(github.com/wenzhanquan/Wzq-MediaWarp,
+				handler.routerRules = append(handler.routerRules,
 					RegexpRouteRule{
 						Regexp: constants.EmbyRegexp.Router.ModifyIndex,
 						Handler: responseModifyCreater(
@@ -89,7 +89,7 @@ func NewEmbyServerHandler(addr string, apiKey string) (*EmbyHandler, error) {
 			}
 		}
 		if config.Subtitle.Enable && config.Subtitle.SRT2ASS {
-			github.com/wenzhanquan/Wzq-MediaWarp = append(github.com/wenzhanquan/Wzq-MediaWarp,
+			handler.routerRules = append(handler.routerRules,
 				RegexpRouteRule{
 					Regexp: constants.EmbyRegexp.Router.ModifySubtitles,
 					Handler: responseModifyCreater(
@@ -114,7 +114,7 @@ func (handler *EmbyHandler) ReverseProxy(rw http.ResponseWriter, req *http.Reque
 
 // 正则路由表
 func (handler *EmbyHandler) GetRegexpRouteRules() []RegexpRouteRule {
-	return github.com/wenzhanquan/Wzq-MediaWarp
+	return handler.routerRules
 }
 
 func (handler *EmbyHandler) GetImageCacheRegexp() *regexp.Regexp {
@@ -358,7 +358,7 @@ func (handler *EmbyHandler) ModifyIndex(rw *http.Response) error {
 	if config.Web.VideoTogether { // VideoTogether
 		addHEAD.WriteString(`<script src="https://2gether.video/release/extension.website.user.js"></script>` + "\n")
 	}
-	addHEAD.WriteString(`<!-- MediaWarp Web 页面修改功能 -->` + "\n" + "</head>")
+	addHEAD.WriteString(`` + "\n" + "</head>")
 	htmlContent = bytes.Replace(htmlContent, []byte("</head>"), addHEAD.Bytes(), 1) // 将添加HEAD
 	rw.Header.Set("Content-Length", strconv.Itoa(len(htmlContent)))
 	rw.Body = io.NopCloser(bytes.NewReader(htmlContent))
