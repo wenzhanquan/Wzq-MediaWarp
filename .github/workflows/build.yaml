@@ -115,7 +115,7 @@ jobs:
             -t "wenzhanquan/mediawarp:${{ steps.prerelease_meta.outputs.version }}" \
             "${image_refs[@]}"
           docker buildx imagetools create \
-            -t "wenzhanquan/mediawarp:prerelease-latest" \
+            -t "wenzhanquan/mediawarp:latest" \
             "${image_refs[@]}"
 
       # ✨ 彻底解决：普通的提交不再去强行覆盖 Git Tag，而是将产物直接上传到 Actions 构件管理
